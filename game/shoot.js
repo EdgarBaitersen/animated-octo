@@ -32,11 +32,38 @@ function shoot()
 
 }
 
+function villain_shoot()
+{
+
+    if (bulletTime1 + 0.8 < clock.getElapsedTime())
+    {
+        bullet = new THREE.Mesh(
+            new THREE.SphereGeometry(2),
+            bullet_player1_material);
+        scene.add(bullet);
+        bullet.position.x = villain1.graphic.position.x + 7.5 * Math.cos(villain1.direction);
+        bullet.position.y = villain1.graphic.position.y + 7.5 * Math.sin(villain1.direction);
+        bullet.angle = villain1.direction;
+        player1.bullets.push(bullet);
+        bulletTime1 = clock.getElapsedTime();
+    } 
+
+    // move bullets
+    var moveDistance = 5;
+
+    for (var i = 0; i < villain1.bullets.length; i++)
+    {
+        villain1.bullets[i].position.x += moveDistance * Math.cos(villain1.bullets[i].angle);
+        villain1.bullets[i].position.y += moveDistance * Math.sin(villain1.bullets[i].angle);
+    }
+}
+
 function collisions()
 {
     bullet_collision();
     player_collision();
     player_falling();
+    villain_shoot();
 }
 
 function bullet_collision()
@@ -51,6 +78,12 @@ function bullet_collision()
             player1.bullets.splice(i, 1);
             i--;
         }
+        /*else if (Math.abs(player1.bullets[i].position.x) == Math.abs(villain1.graphic.position.x) 
+            && Math.abs(player1.bullets[i].position.y) == Math.abs(villain.graphic.position.y)
+            {
+                villain1.dead();
+                i--;
+            }*/
     }
 
 }
@@ -67,6 +100,8 @@ function player_collision()
         player1.graphic.position.y -= y;
     if ( y > HEIGHT )
         player1.graphic.position.y -= y - HEIGHT;
+    if ( x < 0 )
+        player1.graphic.position.x -= x;
 
 }
 
@@ -88,10 +123,10 @@ function player_falling()
         var mtileY = 0;
         if (element != null)
         {
-            tileX = (element[0]);
-            tileY = (element[1]);
-            mtileX = (element[0] + sizeOfTileX);
-            mtileY = (element[1] + sizeOfTileY);
+            tileX = (element[0] - sizeOfTileX / 2);
+            tileY = (element[1] - sizeOfTileY / 2);
+            mtileX = (element[0] + sizeOfTileX - sizeOfTileX/2);
+            mtileY = (element[1] + sizeOfTileY - sizeOfTileY/2);
         }
 
         if ((x > tileX)
